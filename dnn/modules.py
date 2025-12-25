@@ -8,6 +8,39 @@ import torch.nn as nn
 import math
 import numpy as np
 
+
+class LabelEmbedder(nn.Module):
+    """
+        Embeds class label into vector space R^C
+    """
+
+    def __init__(self, num_classes: int, n_embd: int, p_drop: float=0.1):
+        super().__init__()
+        self.num_classes = num_classes
+        self.n_embd = n_embd
+        self.p_drop = p_drop    # for CFG setup during training
+        self.table = nn.Embedding(num_classes + 1, n_embd) # +1 for null class indexed at num_classes in the table
+    
+    def forward(self, y: torch.Tensor, force_drop: bool=False):
+        """
+            y (B,) torch.long or int64
+            returns (B,C)
+        """
+        assert y.dim() == 1, f"expected (B,), got {y.shape}"
+        y = y.long()
+
+        if force_drop:
+            y = torch.full_like(y, self.num_classes)
+        elif self.training and self.p_drop > 0:
+            drops = torch.rand(y.shape[0], device=y.device) < self.p_drop
+            y = torch.where(drops, torch.full_like(y, self.num_classes), y)
+        
+        return self.table(y)
+
+
+
+
+
 class TimeStepEmbedder(nn.Module):
     """
         Embeds scalar continuous time 't' into high dimensional vectorspace using sinusoidal embeddings,
