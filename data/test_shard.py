@@ -2,7 +2,7 @@ import io, glob
 import torch
 import webdataset as wds
 
-pattern = "shards_latent/000000.tar"
+pattern = "shards/000000.tar"
 ds = wds.WebDataset(pattern).to_tuple("pt")
 
 # grab first sample

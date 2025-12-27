@@ -20,7 +20,6 @@ def modulate(x, shift, scale):
     x = x * (1 + scale[:, None, None, :]) + shift[:, None, None, :]
     return x
 
-
 class SelfAttention(nn.Module):
     """
         SelfAttention Module, aggregates information across sequence into individual fragments
@@ -302,3 +301,5 @@ class DropPath(nn.Module):
     
     def extra_repr(self):
         return f"drop_prob={round(self.drop_prob,3):0.3f}"
+
+
