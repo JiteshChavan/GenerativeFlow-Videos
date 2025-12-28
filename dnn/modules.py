@@ -23,18 +23,17 @@ def modulate(x, shift, scale):
     return x
 
 class FinalLayer(nn.Module):
-    """
-        Final Layer of the dnn
-    """
+    """ Final Layer"""
     def __init__(self, dim: int, patch_size: int, out_channels: int):
         super().__init__()
+        self.dim = dim
         self.norm_final = nn.LayerNorm(dim, elementwise_affine=False, eps=1e-6)
-        self.adaLN_modulation = nn.Sequential(nn.SiLU(), nn.Linear(dim, 2*dim, bias=True))
+        self.adaLN_modulation = nn.Sequential(nn.SiLU(), nn.Linear(dim, 2 * dim, bias=True))
         self.linear = nn.Linear(dim, patch_size * patch_size * out_channels, bias=True)
     
     def forward(self, x, y):
         scale, shift = self.adaLN_modulation(y).chunk(2, dim=-1)
-        x = modulate(self.norm_final(x), shift, scale)
+        x = modulate(self.norm_final(x), shift, scale) # (B, T, HW, C)
         x = self.linear(x)
         return x
 
@@ -149,7 +148,7 @@ class TimeStepEmbedder(nn.Module):
         DNN
     """
 
-    def __init__(self, freq_embd:int, n_hidden:int, activation):
+    def __init__(self, n_hidden:int, activation=nn.SiLU, freq_embd:int = 256):
         super().__init__()
 
         assert freq_embd > 1
@@ -158,7 +157,7 @@ class TimeStepEmbedder(nn.Module):
         self.activation = activation
         self.mlp = nn.Sequential(
             nn.Linear (freq_embd, n_hidden, bias=True),
-            self.activation,
+            activation(),
             nn.Linear (n_hidden, n_hidden, bias=True)
         )
     
@@ -227,7 +226,6 @@ class TemporalEmbedder(nn.Module):
     
     def forward (self, frame_idx):
         assert frame_idx.dim() == 1, f"Frame idx tensor must be single dimensional, its : {frame_idx.shape}"
-        assert frame_idx.shape[0] == self.frame_count, f"frame_count:{self.frame_count} and frame_idx:{frame_idx.shape} shape mismatch"
         
         return self.embed_frame_idx(frame_idx, self.n_embd, self.max_period) # (T, C)
 
