@@ -267,23 +267,32 @@ def flowField_xs4(**kwargs):
 def flowField_s4(**kwargs):
     return DNN(
         depth=8,
-        dim=384,
+        dim=512,
         patch_size=4,
+        **kwargs,
+    )
+
+def flowField_s2(**kwargs):
+    return DNN(
+        depth=8,
+        dim=384,
+        patch_size=2,
         **kwargs,
     )
 
 Models = {
     "FlowField_XS/4" : flowField_xs4,
     "FlowField_S/4" : flowField_s4,
+    "FlowField_S/2" : flowField_s2,
 }
 
 def create_dnn(config):
     assert config.dnn_spec in Models.keys(), f"Invalid dnn_spec: {config.dnn_spec}"
     return Models[config.dnn_spec](
-            in_channels = config.in_channels,
-            out_channels = config.out_channels, 
-            spatial_resolution=config.latent_resolution, 
-            temporal_resolution = config.temporal_resolution,
+            in_channels = config.latent_channels,
+            out_channels = config.latent_channels, 
+            spatial_resolution=config.latent_res, 
+            temporal_resolution = config.temporal_res,
             learnable_pe = config.learnable_pe,
             label_dropout = config.label_dropout,
             drop_path = config.drop_path,
