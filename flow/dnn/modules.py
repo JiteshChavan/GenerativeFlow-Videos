@@ -77,8 +77,7 @@ class SelfAttention(nn.Module):
         # y = att @ v
 
         #y = F.scaled_dot_product_attention(q, k, v, is_causal=False) #(B, b, nh, T, hs)
-        with sdpa_kernel([SDPBackend.FLASH_ATTENTION, SDPBackend.EFFICIENT_ATTENTION, SDPBackend.MATH]):
-            y = F.scaled_dot_product_attention(q, k, v, is_causal=False)  # (B*b_aux, nh, T, hs)
+        y = F.scaled_dot_product_attention(q, k, v, is_causal=False)  # (B*b_aux, nh, T, hs)
         
         y = y.transpose(-2, -3).contiguous().view(B, aux_B, T, C) # merge heads (B, b, T, C)
         y = self.proj(y)
