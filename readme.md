@@ -14,7 +14,7 @@ extract the zip in GenerativeFlow-Videos/flow/data
 - conda create -n flow python=3.10 -y
 - conda activate flow
 - conda install -c conda-forge ffmpeg -y
-- pip install -r requirements.txt
+- pip install -r req.txt
 - pip install -e .
 
 # Starting training:
