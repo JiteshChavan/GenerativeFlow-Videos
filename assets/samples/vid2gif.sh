@@ -1,9 +1,9 @@
-#!/usr/bin/env bash
+
 set -euo pipefail
 
 IN_DIR="${1:-.}"
 OUT_DIR="${2:-../gifs}"
-FPS_ARG="${3:-15}"   # "auto" or number like 12/15/20
+FPS_ARG="${3:-15}"   # "auto" = preserve fps or  12/15/20
 
 mkdir -p "$OUT_DIR"
 
@@ -24,8 +24,7 @@ find "$IN_DIR" -maxdepth 1 -type f \( -iname "*.mp4" -o -iname "*.MP4" \) -print
 
   echo "MP4 -> GIF: '$base' (fps=$FPS, keep-res) -> '$(basename "$out_gif")'"
 
-  # -nostdin prevents the interactive prompt.
-  # palettegen + paletteuse in one pipeline (most compatible).
+
   ffmpeg -y -nostdin -v warning -i "$f" \
     -filter_complex "[0:v]fps=${FPS},format=rgba,split[s0][s1];[s0]palettegen=stats_mode=diff[p];[s1][p]paletteuse=dither=sierra2_4a:diff_mode=rectangle" \
     "$out_gif"

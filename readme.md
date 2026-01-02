@@ -1,4 +1,4 @@
-# Generative Flow Model for Conditional Video Synthesis
+# Generative Flow Model for Class Guided Video Synthesis
 **Conditional OT Flow Matching** for text-conditioned video generation with **factorized space–time attention** for efficient temporal consistency.  
 DDP-ready training + data pipeline + one-command sampling and training.
 
@@ -7,16 +7,20 @@ DDP-ready training + data pipeline + one-command sampling and training.
 ## Results (GIF previews → MP4)
 
 **Sampling settings:** 
-320×320 · 3s · 24fps · solver=Heun · NFE=40 · CFG_scale= 4.0 · checkpoint=step100000
+320×320 · 3s · 24fps · solver=Heun · NFE=40 · CFG_scale= 4.0 · checkpoint=100k training steps · model weights = MSE (condOT Flow Matching)
 
 > Click any GIF to watch the full-quality GIFs at 24fps.
-> The shocase has been downsampled to 12fps, given git constraints.
+
+> Previews are downsampled to 12fps , given git constraints.
+
 
 | Visuals| Warmth | tools | droid |
 |---|---|---|---|
 | [![visuals](assets/gifs/visuals.gif)](https://drive.google.com/file/d/1HhBnsss7t-Q3UKDOMBGw-yYgY8JbvtfV/view?usp=drive_link) | [![warmth](assets/gifs/warmth.gif)](https://drive.google.com/file/d/1Qi2ALIr_vTd32ckLhdgM83UXsTIp0K23/view?usp=drive_link) | [![tools](assets/gifs/tools.gif)](https://drive.google.com/file/d/1CeLPWRAGpzz4mc9zoSm9mhTlyEtOyWbh/view?usp=drive_link) | [![droid](assets/gifs/droid.gif)](https://drive.google.com/file/d/1Nh1xBrGMR0uhTAu23DDDCayhlmpRRzeu/view?usp=drive_link) |
 | Sintel Scavenge | Sintel Motion | Sintel Conflict | Sintel Fire |
 | [![Sintel Scavenge](assets/gifs/sintel%20scavenge.gif)](https://drive.google.com/file/d/1iFePHYWsmYPn79WRsLeCVmAw33_4isqC/view?usp=drive_link) | [![sintel motion](assets/gifs/sintel%20motion.gif)](https://drive.google.com/file/d/1PjNaNs05Z1Sn2mprPonjRk-YrHHkSMiQ/view?usp=drive_link) | [![Sintel Conflict](assets/gifs/sintel%20conflict.gif)](https://drive.google.com/file/d/1iDJJQMlDrE9_5eIao4eCQFdwKxNXrPnr/view?usp=drive_link) | [![Sintel Fire](assets/gifs/sintel%20fire.gif)](https://drive.google.com/file/d/1SEd4xqv6pCfmBcR63M62ON_6jWT1QvNv/view?usp=sharing) |
+
+###### Conditional generations at 24fps over all 12 classes: https://drive.google.com/drive/folders/19gNgHTNiTFrXPcPosyOkNxC9rs18CiYB?usp=drive_link
 
 
 
