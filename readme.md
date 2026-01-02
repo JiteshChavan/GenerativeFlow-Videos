@@ -13,7 +13,7 @@ DDP-ready training + data pipeline + one-command sampling and training.
 > The shocase has been downsampled to 12fps, given git constraints.
 
 
-|---|---|---|---|
+
 | [![visuals](assets/gifs/visuals.gif)](https://drive.google.com/file/d/1HhBnsss7t-Q3UKDOMBGw-yYgY8JbvtfV/view?usp=drive_link) | [![warmth](assets/gifs/warmth.gif)](https://drive.google.com/file/d/1Qi2ALIr_vTd32ckLhdgM83UXsTIp0K23/view?usp=drive_link) | [![tools](assets/gifs/tools.gif)](https://drive.google.com/file/d/1CeLPWRAGpzz4mc9zoSm9mhTlyEtOyWbh/view?usp=drive_link) | [![droid](assets/gifs/droid.gif)](https://drive.google.com/file/d/1Nh1xBrGMR0uhTAu23DDDCayhlmpRRzeu/view?usp=drive_link) |
 | [![Sintel Scavenge](assets/gifs/sintel%20scavenge.gif)](https://drive.google.com/file/d/1iFePHYWsmYPn79WRsLeCVmAw33_4isqC/view?usp=drive_link) | [![sintel motion](assets/gifs/sintel%20motion.gif)](https://drive.google.com/file/d/1PjNaNs05Z1Sn2mprPonjRk-YrHHkSMiQ/view?usp=drive_link) | [![Sintel Conflict](assets/gifs/sintel%20conflict.gif)](https://drive.google.com/file/d/1iDJJQMlDrE9_5eIao4eCQFdwKxNXrPnr/view?usp=drive_link) | [![sintel conflict](assets/gifs/sintel%20fire.gif)](https://drive.google.com/file/d/1SEd4xqv6pCfmBcR63M62ON_6jWT1QvNv/view?usp=sharing) |
 
