@@ -77,7 +77,7 @@ python -m flow.dnn.sample --inference-idx demo --ckpt-path $CKPT_PATH \
 
 ## Method (Conditional OT Flow Matching + Factorized Space–Time Attention)
 
-A marginal vector field \(u_\theta(x,t,c)\) is approximated by a DNN, where \(x\) is a video latent, \(t\in[0,1]\) is continuous time, and \(c\) is a class condition.  
+A marginal vector field $\(u_\theta(x,t,c)\)$ is approximated by a DNN, where \(x\) is a video latent, \(t\in[0,1]\) is continuous time, and \(c\) is a class condition.  
 Training uses **conditional OT flow matching**: sample an interpolation between data latents and noise, then regress the model’s vector field to the target conditional flow field with an MSE objective.  
 At inference, we integrate the learned ODE from noise \(\rightarrow\) data using a lightweight solver (Euler/Heun) with low NFE.
 
