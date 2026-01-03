@@ -39,6 +39,7 @@ Download: [shard.zip](https://drive.google.com/file/d/1PTG88ff6UyATgdw8BqRn4jA4l
 extract the zip in GenerativeFlow-Videos/flow/data
 
 ```bash
+find . -name "*.sh" -type f -print0 | xargs -0 sed -i 's/\r$//'
 conda create -n flow python=3.10 -y
 conda activate flow
 conda install -c conda-forge ffmpeg -y
