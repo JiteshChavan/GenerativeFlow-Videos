@@ -93,5 +93,5 @@ Conditioning (class + time) is injected via adaptive normalization (AdaLN-style 
 
 Decoded frames are obtained by inverting the SD VAE, producing RGB videos at the target fps/resolution.
 
-# TODO:
+### TODO:
 - [ ] scale to multimodal synthesis (Audio $\rightarrow$ Video)
