@@ -33,11 +33,10 @@ from diffusers.models import AutoencoderKL
 from flow.dnn import create_dnn
 from .flowMatching import FlowMatching, FlowSampler
 
-from flow.data.loader import build_wds_loader
+from flow.data.lmdb_dataset import make_lmdb_dataloader
 
 import inspect
-import glob
-import tarfile
+
 import wandb
 
 import subprocess
@@ -252,59 +251,50 @@ def main(args):
         init_step = 0
         
 
-    # DATA LAODER
-    shards = sorted(glob.glob(os.path.join(args.data_dir, "shards", "*.tar")))
-    if len(shards) == 0:
-        raise FileNotFoundError(f"No shards found in {os.path.join(args.data_dir, 'shards')}")
+        # DATA LOADER
+    data_dir = os.path.join(args.data_dir, "lmdb", "train.lmdb")
+    assert os.path.exists(data_dir), f"specified datadir :{data_dir} does not exist."
 
-    per_rank_bs = args.batch_size
-    
-    def make_loader(ep: int):
-        return build_wds_loader(
-            shards=shards,
-            batch_size=per_rank_bs,
-            num_workers=args.num_workers,
-            is_train=True,
-            epoch=ep,                    # reshuffle seed uses (seed + epoch)
-            seed=args.global_seed,
-            T_train=args.temporal_res,
-            stride=getattr(args, "stride", 1),
-            hflip_p=getattr(args, "hflip_p", 0.0),
-            time_reverse_p=getattr(args, "time_reverse_p", 0.0),
-            shuffle_buf=getattr(args, "shuffle_buf", 128),
-            shard_shuffle=True,
-            drop_last=False,
-            limit_samples=args.limit_samples,
-        )
+    batch_size = args.batch_size
 
     epoch = init_epoch
-    micro_idx_in_epoch = 0
     current_step = init_step
     total_steps = args.train_steps
 
-    train_loader = make_loader(epoch)
+    
+    dataset, train_loader, data_sampler = make_lmdb_dataloader(
+        lmdb_path=data_dir,
+        batch_size=batch_size,
+        num_workers=args.num_workers,
+        is_distributed=(world_size > 1),
+        shuffle=True,
+        drop_last=True,
+        pin_memory=True,
+        persistent_workers=True,
+        p_hflip=args.p_hflip,
+        p_time_reverse=args.p_time_reverse,
+        return_meta=False,
+    )
+
+
+    logger.info(f"Found {len(dataset)} examples.")
+
+    
+    if data_sampler is not None:
+        data_sampler.set_epoch(epoch)
     data_iter = iter(train_loader)
 
-    steps_per_reshuffle = getattr(args, "steps_per_reshuffle", 4000)
-
-
     def next_batch():
-        nonlocal data_iter, epoch, micro_idx_in_epoch, train_loader, current_step
+        nonlocal data_iter, epoch, train_loader
 
         try:
-            batch = next(data_iter)
+            return next(data_iter)
         except StopIteration:
             epoch += 1
-            micro_idx_in_epoch = 0
-            if rank == 0:
-                logger.info(f"Loader exhausted -> restarting at epoch {epoch}")
-            train_loader = make_loader(epoch)
+            if data_sampler is not None:
+                data_sampler.set_epoch(epoch)
             data_iter = iter(train_loader)
-            batch = next(data_iter)
-
-        micro_idx_in_epoch += 1
-        return batch
-
+            return next(data_iter)
     
     # TRAINING!!
     DNN.train()
@@ -435,7 +425,6 @@ def main(args):
 
                     "data_loader_state": {
                         "epoch": epoch,
-                        "micro_idx_in_epoch": int (micro_idx_in_epoch),
                     }
                 }
 

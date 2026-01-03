@@ -248,7 +248,7 @@ def main(args):
         init_step = 0
         
 
-    # DATA LAODER
+    # DATA LOADER
     data_dir = os.path.join(args.data_dir, "lmdb", "train.lmdb")
     assert os.path.exists(data_dir), f"specified datadir :{data_dir} does not exist."
 
