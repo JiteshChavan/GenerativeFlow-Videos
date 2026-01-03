@@ -40,10 +40,26 @@ import wandb
 
 import subprocess
 
+def get_ffmpeg_exe() -> str:
+    #exe = shutil.which("ffmpeg")
+    #if exe is not None:
+    #    return exe
+
+    try:
+        import imageio_ffmpeg
+        return imageio_ffmpeg.get_ffmpeg_exe()
+    except Exception as e:
+        raise RuntimeError(
+            "ffmpeg binary not found. Install it via:\n"
+            "  conda install -c conda-forge ffmpeg -y\n"
+            "or:\n"
+            "  pip install imageio-ffmpeg\n"
+        ) from e
+
 def reencode_h264(in_path: str, out_path: str):
-    # Browser/W&B friendly MP4: H.264 + yuv420p + faststart
+    ffmpeg = get_ffmpeg_exe()
     cmd = [
-        "ffmpeg", "-y",
+        ffmpeg, "-y",
         "-i", in_path,
         "-vcodec", "libx264",
         "-pix_fmt", "yuv420p",
@@ -51,6 +67,22 @@ def reencode_h264(in_path: str, out_path: str):
         out_path,
     ]
     subprocess.run(cmd, check=True)
+
+def save_mp4(samples, path, fps=24):
+    # samples (T, 3, H, W) in [0,1]
+    samples = (samples.clamp(0,1) * 255).round().to(torch.uint8)
+    samples = samples.permute(0, 2, 3, 1).contiguous().cpu().numpy() # (T, H, W, 3) RGB
+    T, H, W, C = samples.shape
+
+    os.makedirs(os.path.dirname(path), exist_ok=True)
+    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
+    vw = cv2.VideoWriter(path, fourcc, fps, (W, H))
+
+    for i in range(T):
+        bgr = cv2.cvtColor(samples[i], cv2.COLOR_RGB2BGR)
+        vw.write(bgr)
+    
+    vw.release()
 
 def create_logger(logging_dir):
     """
@@ -139,21 +171,7 @@ def ddp_setup(global_seed: int):
     return rank, local_rank, world_size, device
 
 
-def save_mp4(samples, path, fps=24):
-    # samples (T, 3, H, W) in [0,1]
-    samples = (samples.clamp(0,1) * 255).round().to(torch.uint8)
-    samples = samples.permute(0, 2, 3, 1).contiguous().cpu().numpy() # (T, H, W, 3) RGB
-    T, H, W, C = samples.shape
 
-    os.makedirs(os.path.dirname(path), exist_ok=True)
-    fourcc = cv2.VideoWriter_fourcc(*"mp4v")
-    vw = cv2.VideoWriter(path, fourcc, fps, (W, H))
-
-    for i in range(T):
-        bgr = cv2.cvtColor(samples[i], cv2.COLOR_RGB2BGR)
-        vw.write(bgr)
-    
-    vw.release()
 
 def main(args):
     """
