@@ -12,7 +12,7 @@ TRAIN_STEPS=10000
 GLOBAL_BATCH_SIZE=$((BATCH_SIZE * NUM_GPUS))
 
 
-export WANDB_API_KEY="2f92f218fe46708930c460c6f57055ac6ce1361c"
+export WANDB_API_KEY="<INSERT YOU WANDB KEY>"
 torchrun --standalone --nproc_per_node=$NUM_GPUS -m flow.dnn.train --exp $EXP --data-dir ../data/ \
   --dnn-spec FlowField_S/4 \
   --num-classes 12 \

@@ -8,7 +8,7 @@ GRAD_ACC_STEPS=2
 BATCH_SIZE=24
 TRAIN_STEPS=100000
 
-export WANDB_API_KEY="2f92f218fe46708930c460c6f57055ac6ce1361c"
+export WANDB_API_KEY="<INSERT YOU WANDB KEY>"
 torchrun --standalone --nproc_per_node=$NUM_GPUS -m flow.dnn.grad_acc_train --exp $EXP --data-dir flow/data/ \
   --dnn-spec FlowField_S/4 \
   --num-classes 12 \
