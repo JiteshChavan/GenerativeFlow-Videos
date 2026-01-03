@@ -9,7 +9,7 @@ DDP-ready training + data pipeline + one-command sampling and training.
 **Sampling settings:** 
 320×320 · 3s · 24fps · solver=Heun · NFE=40 · CFG_scale= 4.0 · checkpoint=100k training steps · model weights = MSE (condOT Flow Matching)
 
-> Click any GIF to watch the full-quality GIFs at 24fps.
+> Click any GIF to watch the full-quality Videos at 24fps.
 
 > Previews are downsampled to 12fps , given git constraints.
 
