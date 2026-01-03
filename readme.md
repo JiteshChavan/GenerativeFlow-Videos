@@ -13,6 +13,9 @@ DDP-ready training + data pipeline + one-command sampling and training.
 
 > Previews are downsampled to 12fps , given git constraints.
 
+> Demo uses a 100k-step checkpoint trained on a small curated set of short clips for proof-of-concept (Sintel + Dillama + Charged).
+
+
 
 | Visuals| Warmth | tools | droid |
 |---|---|---|---|
@@ -31,7 +34,7 @@ git clone https://github.com/JiteshChavan/GenerativeFlow-Videos.git
 cd GenerativeFlow-Videos
 
 download data shard:
-Download: [shard.zop](https://drive.google.com/file/d/1PTG88ff6UyATgdw8BqRn4jA4lLGhPjpg/view?usp=drive_link)
+Download: [shard.zip](https://drive.google.com/file/d/1PTG88ff6UyATgdw8BqRn4jA4lLGhPjpg/view?usp=drive_link)
 
 extract the zip in GenerativeFlow-Videos/flow/data
 
@@ -50,4 +53,37 @@ bash grad_acc_flowS4.sh
 ```
 
 ## Inference:
+Specify pre-trained checkpoint path in ```scripts/inference.sh``` and run the script for sampling videos.
+
+```bash
+SEED=051197
+CKPT_PATH="checkpoint.pt"
+BATCH_SIZE=2
+VAE_FRAME_DECODE_BATCH=4
+
+python -m flow.dnn.sample --inference-idx demo --ckpt-path $CKPT_PATH \
+ --dnn-spec FlowField_S/4 \
+ --temporal-res 72 \
+ --batch-size $BATCH_SIZE \
+ --vae-frame-decode-batch $VAE_FRAME_DECODE_BATCH \
+ --solver heun \
+ --sample-fps 24 \
+ --learnable-pe \
+ --use-temporal-attention \
+ --seed  $SEED
+```
+
+## Pretrained checkpoint download coming soon!
+
+## Method (Conditional OT Flow Matching + Factorized Space–Time Attention)
+
+A marginal vector field \(u_\theta(x,t,c)\) is approximated by a DNN, where \(x\) is a video latent, \(t\in[0,1]\) is continuous time, and \(c\) is a class condition.  
+Training uses **conditional OT flow matching**: sample an interpolation between data latents and noise, then regress the model’s vector field to the target conditional flow field with an MSE objective.  
+At inference, we integrate the learned ODE from noise \(\rightarrow\) data using a lightweight solver (Euler/Heun) with low NFE.
+
+To improve temporal consistency efficiently, the DNN uses **factorized space–time attention**: (1) spatial self-attention within each frame, then (2) temporal self-attention across frames per spatial location. This reduces attention cost from full space–time \(O((T\!\cdot\!HW)^2)\) to \(O\big(T\,(HW)^2 + HW\,T^2\big)\).
+
+Conditioning (class + time) is injected via adaptive normalization (AdaLN-style modulation) and classifier-free guidance (CFG) is applied at sampling time.
+
+Decoded frames are obtained by inverting the SD VAE, producing RGB videos at the target fps/resolution.
 
