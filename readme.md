@@ -74,8 +74,6 @@ python -m flow.dnn.sample --inference-idx demo --ckpt-path $CKPT_PATH \
  --seed  $SEED
 ```
 
-## Pretrained checkpoint download coming soon!
-
 ## Method (Conditional OT Flow Matching + Factorized Space–Time Attention)
 
 A marginal vector field $u^{\theta}(x,t,c)$ is approximated by a DNN, where $x$ is a video latent, $t\in[0,1]$ is continuous time, and $c$ is a class condition.  
